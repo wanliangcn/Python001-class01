@@ -38,8 +38,6 @@ for tags in bs_info.find_all('div', attrs={'class': 'movie-info'}):
                     title.text, actors.text, showtime.text))
 
                 mylist = [(title.text, actors.text, showtime.text)]
-
                 movie1 = pd.DataFrame(data=mylist)
-
                 movie1.to_csv('./movie1.csv', mode='a', encoding='utf8',
                               index=False, header=False)
