@@ -17,23 +17,29 @@ response = requests.get(myurl, headers=headers)
 # print(f'返回码是：{response.status_code}')
 
 # 保存网页到本地
-file_obj = open('maoyan.html', 'w')
-file_obj.write(response.text)
-file_obj.close()
+file_obj = open('maoyan.html', 'w')  # 以写模式打开名叫 maoyan.htm 的文件
+file_obj.write(response.text)  # 把请求到的html内容写入
+file_obj.close()  # 关闭文件
 
-bs_info = bs(response.text, 'html.parser')
+file_obj = open('maoyan.html', 'r')  # 以读方式打开文件
+html = file_obj.read()  # 把文件内容读取出来并赋值给html变量
+file_obj.close()  # 关闭文件
+
+bs_info = bs(html, 'lxml')
+
+all_movies = bs_info.find('div', attrs={'class': 'classic-movie-list'})
 
 for tags in bs_info.find_all('div', attrs={'class': 'movie-info'}):
     for title in tags.find_all('div', attrs={'class': 'title'}):
         for actors in tags.find_all('div', attrs={'class': 'actors'}):
             for showtime in tags.find_all('div', attrs={'class': 'show-info'}):
-                print(f'电影名称：{title.text}')
-                print(f'电影类型：{actors.text}')
-                print(f'上映日期：{showtime.text}')
 
-mylist = {title.text, actors.text, showtime.text}
+                print('电影名称：{}｜电影类型：{}｜上映日期：{}'.format(
+                    title.text, actors.text, showtime.text))
 
-movie1 = pd.DataFrame(data=mylist)
+                mylist = [(title.text, actors.text, showtime.text)]
 
-movie1.to_csv('./movie1.csv', mode='a', encoding='utf8',
-              index=False, header=False, sep=',', line_terminator='\n')
+                movie1 = pd.DataFrame(data=mylist)
+
+                movie1.to_csv('./movie1.csv', mode='a', encoding='utf8',
+                              index=False, header=False)
